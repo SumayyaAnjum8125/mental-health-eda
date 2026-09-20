@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Professional color palette
+# Colors
 COLORS = {
     'primary': '#2E86AB',
     'secondary': '#A23B72',
@@ -31,21 +31,16 @@ COLORS = {
 def load_data():
     df = pd.read_csv('mental_health_survey.csv')
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-    df['age_group'] = pd.cut(df['Age'], bins=[0, 25, 35, 45, 55, 100],
-                             labels=['18-25', '26-35', '36-45', '46-55', '55+'])
+    df['age_group'] = pd.cut(df['Age'], bins=[0,25,35,45,55,100],
+                             labels=['18-25','26-35','36-45','46-55','55+'])
     return df
 
 df = load_data()
 
 # Sidebar
-st.sidebar.markdown("# 🧠 Mental Health in Tech")
-st.sidebar.markdown("---")
-
-page = st.sidebar.radio(
-    "📍 SELECT PAGE",
+page = st.sidebar.radio("📍 SELECT PAGE",
     ["📊 Dashboard","👥 Demographics","❤️ Mental Health","🏢 Support",
-     "💼 Culture","🏭 Company","📈 Analysis","🎯 Insights"]
-)
+     "💼 Culture","🏭 Company","📈 Analysis","🎯 Insights"])
 
 # Filters
 selected_country = st.sidebar.selectbox("Select Country", ["All"] + sorted(df['Country'].unique().tolist()))
@@ -53,107 +48,136 @@ selected_gender = st.sidebar.selectbox("Select Gender", ["All"] + sorted(df['Gen
 selected_size = st.sidebar.selectbox("Select Company Size", ["All","1-5","6-25","26-100","100-500","500-1000","1000+"])
 
 filtered_df = df.copy()
-if selected_country != "All": filtered_df = filtered_df[filtered_df['Country'] == selected_country]
-if selected_gender != "All": filtered_df = filtered_df[filtered_df['Gender'] == selected_gender]
-if selected_size != "All": filtered_df = filtered_df[filtered_df['no_employees'] == selected_size]
+if selected_country != "All": filtered_df = filtered_df[filtered_df['Country']==selected_country]
+if selected_gender != "All": filtered_df = filtered_df[filtered_df['Gender']==selected_gender]
+if selected_size != "All": filtered_df = filtered_df[filtered_df['no_employees']==selected_size]
 
-# ============================================================================ #
-# DASHBOARD PAGE
-# ============================================================================ #
-if page == "📊 Dashboard":
-    st.title("🧠 Mental Health in Tech Survey")
-    st.markdown("**Professional Analysis Dashboard | 2014 Survey Data**")
+# DASHBOARD
+if page=="📊 Dashboard":
+    st.title("🧠 Dashboard Overview")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: st.metric("Total Respondents", f"{len(filtered_df):,}")
-    with col2: st.metric("Countries", f"{filtered_df['Country'].nunique()}")
-    with col3: st.metric("Average Age", f"{filtered_df['Age'].mean():.1f}")
-    with col4: st.metric("Remote Workers", f"{(filtered_df['remote_work'] == 'Yes').sum()}")
+    col1,col2,col3,col4 = st.columns(4)
+    with col1: st.metric("Respondents", f"{len(filtered_df):,}")
+    with col2: st.metric("Treatment Yes", (filtered_df['treatment']=='Yes').sum())
+    with col3: st.metric("Family History Yes", (filtered_df['family_history']=='Yes').sum())
+    with col4: st.metric("Benefits Yes", (filtered_df['benefits']=='Yes').sum())
 
     st.markdown("---")
+    st.subheader("📈 Treatment vs Family History")
+    crosstab = pd.crosstab(filtered_df['family_history'], filtered_df['treatment'])
+    fig, ax = plt.subplots()
+    crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']])
+    st.pyplot(fig)
 
-    col1, col2, col3 = st.columns(3)
-    with col1: st.metric("Sought Treatment", f"{(filtered_df['treatment'] == 'Yes').sum()} people")
-    with col2: st.metric("Family History", f"{(filtered_df['family_history'] == 'Yes').sum()} people")
-    with col3: st.metric("Has Benefits", f"{(filtered_df['benefits'] == 'Yes').sum()} people")
+# DEMOGRAPHICS
+elif page=="👥 Demographics":
+    st.title("👥 Demographics")
+    col1,col2 = st.columns(2)
+    with col1:
+        st.subheader("Age Distribution")
+        fig, ax = plt.subplots()
+        ax.hist(filtered_df['Age'], bins=20, color=COLORS['primary'], edgecolor='white')
+        st.pyplot(fig)
+    with col2:
+        st.subheader("Gender Distribution")
+        gender_counts = filtered_df['Gender'].value_counts()
+        fig, ax = plt.subplots()
+        wedges, texts, autotexts = ax.pie(gender_counts.values, autopct='%1.1f%%',
+                                          colors=[COLORS['primary'],COLORS['secondary'],COLORS['success'],COLORS['warning'],COLORS['danger']],
+                                          startangle=90)
+        ax.legend(wedges, gender_counts.index, title="Gender", loc="center left", bbox_to_anchor=(1,0,0.5,1))
+        st.pyplot(fig)
 
-# ============================================================================ #
-# DEMOGRAPHICS PAGE
-# ============================================================================ #
-elif page == "👥 Demographics":
-    st.title("👥 Demographic Analysis")
-    st.write("Age, Gender, and Country distributions with charts and stats.")
+# MENTAL HEALTH
+elif page=="❤️ Mental Health":
+    st.title("❤️ Mental Health")
+    col1,col2 = st.columns(2)
+    with col1:
+        st.subheader("Treatment Status")
+        treatment_counts = filtered_df['treatment'].value_counts()
+        fig, ax = plt.subplots()
+        ax.bar(treatment_counts.index, treatment_counts.values, color=[COLORS['success'],COLORS['danger']])
+        st.pyplot(fig)
+    with col2:
+        st.subheader("Work Interference")
+        work_counts = filtered_df['work_interfere'].value_counts()
+        fig, ax = plt.subplots()
+        ax.bar(work_counts.index, work_counts.values, color=[COLORS['danger'],COLORS['warning'],COLORS['primary'],COLORS['success']])
+        st.pyplot(fig)
 
-# ============================================================================ #
-# MENTAL HEALTH PAGE
-# ============================================================================ #
-elif page == "❤️ Mental Health":
-    st.title("❤️ Mental Health Metrics")
-    col1, col2, col3 = st.columns(3)
-    with col1: st.metric("Treatment Yes", f"{(filtered_df['treatment'] == 'Yes').sum()}")
-    with col2: st.metric("Family History Yes", f"{(filtered_df['family_history'] == 'Yes').sum()}")
-    with col3: st.metric("Work Interference (Sometimes/Often)", f"{(filtered_df['work_interfere'].isin(['Sometimes','Often'])).sum()}")
-    col1, col2 = st.columns(2)
-    with col1: st.metric("Fear Consequences Yes", f"{(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
-    with col2: st.metric("Remote Workers", f"{(filtered_df['remote_work'] == 'Yes').sum()}")
+# SUPPORT
+elif page=="🏢 Support":
+    st.title("🏢 Employer Support")
+    support_cols = ['benefits','care_options','wellness_program','seek_help','anonymity']
+    for col in support_cols:
+        st.subheader(col.capitalize())
+        counts = filtered_df[col].value_counts()
+        fig, ax = plt.subplots()
+        ax.bar(counts.index, counts.values, color=[COLORS['success'],COLORS['danger']])
+        st.pyplot(fig)
 
-# ============================================================================ #
-# SUPPORT PAGE
-# ============================================================================ #
-elif page == "🏢 Support":
-    st.title("🏢 Employer Support Metrics")
-    col1, col2, col3 = st.columns(3)
-    with col1: st.metric("Benefits Yes", f"{(filtered_df['benefits'] == 'Yes').sum()}")
-    with col2: st.metric("Care Options Yes", f"{(filtered_df['care_options'] == 'Yes').sum()}")
-    with col3: st.metric("Wellness Program Yes", f"{(filtered_df['wellness_program'] == 'Yes').sum()}")
-    col1, col2 = st.columns(2)
-    with col1: st.metric("Seek Help Resources Yes", f"{(filtered_df['seek_help'] == 'Yes').sum()}")
-    with col2: st.metric("Anonymity Protected Yes", f"{(filtered_df['anonymity'] == 'Yes').sum()}")
+# CULTURE
+elif page=="💼 Culture":
+    st.title("💼 Workplace Culture")
+    col1,col2 = st.columns(2)
+    with col1:
+        st.subheader("Coworkers")
+        counts = filtered_df['coworkers'].value_counts()
+        fig, ax = plt.subplots()
+        ax.pie(counts.values, autopct='%1.1f%%', colors=[COLORS['primary'],COLORS['secondary'],COLORS['success']], startangle=90)
+        ax.legend(counts.index)
+        st.pyplot(fig)
+    with col2:
+        st.subheader("Supervisor")
+        counts = filtered_df['supervisor'].value_counts()
+        fig, ax = plt.subplots()
+        ax.pie(counts.values, autopct='%1.1f%%', colors=[COLORS['primary'],COLORS['secondary'],COLORS['success']], startangle=90)
+        ax.legend(counts.index)
+        st.pyplot(fig)
 
-# ============================================================================ #
-# CULTURE PAGE
-# ============================================================================ #
-elif page == "💼 Culture":
-    st.title("💼 Workplace Culture Metrics")
-    col1, col2, col3 = st.columns(3)
-    with col1: st.metric("Discuss with Coworkers Yes", f"{(filtered_df['coworkers'] == 'Yes').sum()}")
-    with col2: st.metric("Discuss with Supervisor Yes", f"{(filtered_df['supervisor'] == 'Yes').sum()}")
-    with col3: st.metric("Fear Consequences Yes", f"{(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
+# COMPANY
+elif page=="🏭 Company":
+    st.title("🏭 Company Analysis")
+    col1,col2 = st.columns(2)
+    with col1:
+        st.subheader("Company Size")
+        counts = filtered_df['no_employees'].value_counts()
+        fig, ax = plt.subplots()
+        ax.bar(counts.index, counts.values, color=COLORS['primary'])
+        st.pyplot(fig)
+    with col2:
+        st.subheader("Tech vs Non-Tech")
+        counts = filtered_df['tech_company'].value_counts()
+        fig, ax = plt.subplots()
+        ax.bar(counts.index, counts.values, color=[COLORS['primary'],COLORS['secondary']])
+        st.pyplot(fig)
 
-# ============================================================================ #
-# COMPANY PAGE
-# ============================================================================ #
-elif page == "🏭 Company":
-    st.title("🏭 Company Metrics")
-    col1, col2 = st.columns(2)
-    with col1: st.metric("Tech Companies", f"{(filtered_df['tech_company'] == 'Yes').sum()}")
-    with col2: st.metric("Non-Tech Companies", f"{(filtered_df['tech_company'] == 'No').sum()}")
-    st.metric("Company Size Categories", f"{filtered_df['no_employees'].nunique()} sizes")
+# ANALYSIS
+elif page=="📈 Analysis":
+    st.title("📈 Cross Analysis")
+    st.subheader("Treatment by Gender")
+    crosstab = pd.crosstab(filtered_df['Gender'], filtered_df['treatment'])
+    fig, ax = plt.subplots()
+    crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']])
+    st.pyplot(fig)
 
-# ============================================================================ #
-# ANALYSIS PAGE
-# ============================================================================ #
-elif page == "📈 Analysis":
-    st.title("📈 Cross-Analysis Metrics")
-    st.write("Here you can add crosstab charts or metrics comparing treatment vs family history, gender, company size, etc.")
-    st.metric("Treatment vs Family History (Yes/Yes)", f"{len(filtered_df[(filtered_df['family_history']=='Yes') & (filtered_df['treatment']=='Yes')])}")
+# INSIGHTS
+elif page=="🎯 Insights":
+    st.title("🎯 Insights & Recommendations")
+    treatment_pct = (filtered_df['treatment']=='Yes').mean()*100
+    benefits_pct = (filtered_df['benefits']=='Yes').mean()*100
+    st.write(f"📊 {treatment_pct:.1f}% sought treatment vs {benefits_pct:.1f}% have benefits.")
+    st.write("➡️ Recommendation: Expand benefits and reduce stigma.")
+    fig, ax = plt.subplots()
+    summary = pd.DataFrame({
+        'Metric':['Treatment','Benefits','Family History','Remote Work'],
+        'Percentage':[treatment_pct, benefits_pct,
+                      (filtered_df['family_history']=='Yes').mean()*100,
+                      (filtered_df['remote_work']=='Yes').mean()*100]
+    })
+    sns.barplot(data=summary, x='Metric', y='Percentage', palette='Blues', ax=ax)
+    st.pyplot(fig)
 
-# ============================================================================ #
-# INSIGHTS PAGE
-# ============================================================================ #
-elif page == "🎯 Insights":
-    st.title("🎯 Key Insights & Recommendations")
-    st.write("Summary of metrics and recommendations based on gaps between mental health needs and employer support.")
-    st.metric("Gap: Treatment vs Benefits", f"{(filtered_df['treatment']=='Yes').sum() - (filtered_df['benefits']=='Yes').sum()} people")
-
-# ============================================================================ #
 # Footer
-# ============================================================================ #
 st.markdown("---")
-st.markdown("""
-    <div style='text-align: center; color: gray; font-size: 11px; padding: 20px;'>
-        <b>Mental Health in Tech Survey Dashboard</b><br>
-        Enhanced Professional Version | 2014 Survey Data | Interactive Analysis<br>
-        © 2024 Data Analysis Project
-    </div>
-""", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center;color:gray;font-size:11px;'>© 2024 Data Analysis Project</div>", unsafe_allow_html=True)
