@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -21,90 +22,195 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM COLORS
+# PROFESSIONAL COLOR PALETTE
 # ============================================================
 
 COLORS = {
-    "primary": "#4F46E5",
+    "primary": "#2563EB",
     "secondary": "#7C3AED",
-    "success": "#10B981",
-    "danger": "#EF4444",
-    "warning": "#F59E0B",
-    "info": "#06B6D4",
-    "pink": "#EC4899",
+    "success": "#059669",
+    "danger": "#DC2626",
+    "warning": "#D97706",
+    "info": "#0891B2",
+    "pink": "#DB2777",
+
     "dark": "#1E293B",
     "text": "#334155",
+    "gray": "#64748B",
     "light": "#F8FAFC",
-    "white": "#FFFFFF",
-    "gray": "#64748B"
+    "border": "#E2E8F0",
+    "white": "#FFFFFF"
 }
+
+
+# ============================================================
+# MATPLOTLIB PROFESSIONAL STYLE
+# ============================================================
+
+plt.rcParams.update({
+    "font.family": "DejaVu Sans",
+    "font.size": 10,
+    "axes.titlesize": 15,
+    "axes.titleweight": "bold",
+    "axes.labelsize": 10,
+    "axes.labelcolor": COLORS["text"],
+    "xtick.color": COLORS["text"],
+    "ytick.color": COLORS["text"],
+    "text.color": COLORS["text"],
+    "axes.edgecolor": "#CBD5E1",
+    "axes.facecolor": "#FFFFFF",
+    "figure.facecolor": "#FFFFFF",
+    "grid.color": "#E2E8F0",
+    "grid.alpha": 0.7
+})
 
 sns.set_style("whitegrid")
 
 
 # ============================================================
-# CUSTOM CSS
+# CUSTOM STREAMLIT CSS
 # ============================================================
 
 st.markdown(
     """
     <style>
 
+    /* Main application background */
     .stApp {
         background-color: #F8FAFC;
-    }
-
-    [data-testid="stSidebar"] {
-        background: linear-gradient(
-            180deg,
-            #EEF2FF 0%,
-            #F8FAFC 100%
-        );
-    }
-
-    h1 {
         color: #1E293B;
-        font-weight: 700;
     }
 
-    h2, h3 {
+    /* Main content text */
+    .main {
+        color: #1E293B;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #F1F5F9;
+        border-right: 1px solid #E2E8F0;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: #1E293B !important;
+    }
+
+    /* Sidebar headings */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #1E293B !important;
+    }
+
+    /* Normal headings */
+    h1, h2, h3, h4 {
+        color: #1E293B !important;
+    }
+
+    /* Paragraph text */
+    p, label, span {
         color: #334155;
     }
 
-    .main-title {
-        font-size: 38px;
-        font-weight: 800;
-        color: #1E293B;
-        margin-bottom: 5px;
+    /* Select boxes */
+    div[data-baseweb="select"] > div {
+        background-color: #FFFFFF;
+        border: 1px solid #CBD5E1;
     }
 
-    .subtitle {
-        color: #64748B;
-        font-size: 17px;
-        margin-bottom: 25px;
+    /* Multiselect */
+    div[data-baseweb="select"] span {
+        color: #1E293B !important;
+    }
+
+    /* Metric cards */
+    div[data-testid="stMetric"] {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 18px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    div[data-testid="stMetric"] label {
+        color: #64748B !important;
+        font-size: 14px;
+    }
+
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        color: #1E293B !important;
+        font-weight: 700;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background-color: #2563EB;
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 600;
+    }
+
+    .stButton > button:hover {
+        background-color: #1D4ED8;
+        color: white !important;
+    }
+
+    /* Download button */
+    .stDownloadButton > button {
+        background-color: #059669;
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* Info boxes */
+    div[data-testid="stAlert"] {
+        color: #1E293B;
+    }
+
+    /* Dataframes */
+    div[data-testid="stDataFrame"] {
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+    }
+
+    /* Horizontal line */
+    hr {
+        border-color: #E2E8F0;
+    }
+
+    /* Custom title */
+    .dashboard-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1E293B !important;
+        margin-bottom: 4px;
+    }
+
+    .dashboard-subtitle {
+        font-size: 16px;
+        color: #64748B !important;
+        margin-bottom: 22px;
     }
 
     .section-title {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
-        color: #334155;
-        margin-top: 20px;
+        color: #1E293B !important;
+        margin-top: 10px;
         margin-bottom: 10px;
     }
 
-    [data-testid="stMetric"] {
-        background-color: white;
-        padding: 18px;
-        border-radius: 15px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
-    }
-
-    .info-box {
-        background-color: #EEF2FF;
-        padding: 18px;
-        border-radius: 12px;
-        border-left: 5px solid #4F46E5;
+    .info-card {
+        background-color: #EFF6FF;
+        border-left: 5px solid #2563EB;
+        padding: 15px;
+        border-radius: 8px;
+        color: #1E293B !important;
         margin: 10px 0;
     }
 
@@ -121,46 +227,73 @@ st.markdown(
 @st.cache_data
 def load_data():
 
-    df = pd.read_csv("mental_health_survey.csv")
+    # Support both filenames
+    if os.path.exists("mental_health_survey.csv"):
+        file_name = "mental_health_survey.csv"
 
-    # Remove extra spaces from column names
+    elif os.path.exists("survey.csv"):
+        file_name = "survey.csv"
+
+    else:
+        st.error(
+            "CSV file not found. Please keep survey.csv or "
+            "mental_health_survey.csv in the same folder as app.py."
+        )
+        st.stop()
+
+    df = pd.read_csv(file_name)
+
+    # Clean column names
     df.columns = df.columns.str.strip()
 
-    # Convert timestamp
+    # Timestamp
     if "Timestamp" in df.columns:
         df["Timestamp"] = pd.to_datetime(
             df["Timestamp"],
             errors="coerce"
         )
 
-    # Clean Age
-    df["Age"] = pd.to_numeric(
-        df["Age"],
-        errors="coerce"
-    )
+    # Age cleaning
+    if "Age" in df.columns:
 
-    # Keep realistic ages
-    df.loc[
-        (df["Age"] < 18) | (df["Age"] > 100),
-        "Age"
-    ] = np.nan
+        df["Age"] = pd.to_numeric(
+            df["Age"],
+            errors="coerce"
+        )
 
-    # Age groups
-    df["age_group"] = pd.cut(
-        df["Age"],
-        bins=[17, 25, 35, 45, 55, 100],
-        labels=[
-            "18–25",
-            "26–35",
-            "36–45",
-            "46–55",
-            "56+"
-        ]
-    )
+        df.loc[
+            (df["Age"] < 18) |
+            (df["Age"] > 100),
+            "Age"
+        ] = np.nan
+
+        df["age_group"] = pd.cut(
+            df["Age"],
+            bins=[17, 25, 35, 45, 55, 100],
+            labels=[
+                "18–25",
+                "26–35",
+                "36–45",
+                "46–55",
+                "56+"
+            ]
+        )
 
     # Clean text columns
-    for col in df.select_dtypes(include="object").columns:
-        df[col] = df[col].astype(str).str.strip()
+    for col in df.select_dtypes(
+        include="object"
+    ).columns:
+
+        df[col] = (
+            df[col]
+            .astype(str)
+            .str.strip()
+        )
+
+        df[col] = df[col].replace(
+            ["nan", "NaN", "None"],
+            np.nan
+        )
 
     return df
 
@@ -169,15 +302,113 @@ df = load_data()
 
 
 # ============================================================
-# SIDEBAR
+# HELPER FUNCTIONS
+# ============================================================
+
+def percentage(series, value="Yes"):
+
+    valid = series.dropna()
+
+    if len(valid) == 0:
+        return 0
+
+    return (
+        (valid == value).mean()
+        * 100
+    )
+
+
+def make_chart():
+
+    fig, ax = plt.subplots(
+        figsize=(10, 5.2),
+        dpi=110
+    )
+
+    fig.patch.set_facecolor(
+        COLORS["white"]
+    )
+
+    ax.set_facecolor(
+        COLORS["white"]
+    )
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    ax.spines["left"].set_color(
+        "#CBD5E1"
+    )
+
+    ax.spines["bottom"].set_color(
+        "#CBD5E1"
+    )
+
+    ax.grid(
+        axis="y",
+        linestyle="--",
+        alpha=0.35
+    )
+
+    return fig, ax
+
+
+def format_chart(
+    ax,
+    title,
+    xlabel="",
+    ylabel=""
+):
+
+    ax.set_title(
+        title,
+        fontsize=15,
+        fontweight="bold",
+        color=COLORS["dark"],
+        pad=15
+    )
+
+    ax.set_xlabel(
+        xlabel,
+        fontsize=10,
+        color=COLORS["text"],
+        labelpad=8
+    )
+
+    ax.set_ylabel(
+        ylabel,
+        fontsize=10,
+        color=COLORS["text"],
+        labelpad=8
+    )
+
+    ax.tick_params(
+        axis="both",
+        labelsize=9,
+        colors=COLORS["text"]
+    )
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    plt.tight_layout()
+
+
+# ============================================================
+# SIDEBAR HEADER
 # ============================================================
 
 st.sidebar.markdown(
     """
-    <h2 style="text-align:center;">🧠 Mental Health</h2>
-    <p style="text-align:center;color:#64748B;">
-    Tech Workplace Survey
-    </p>
+    <div style="text-align:center;">
+        <div style="font-size:42px;">🧠</div>
+        <h2 style="margin-bottom:0px;">
+            Mental Health
+        </h2>
+        <p style="color:#64748B;">
+            Tech Workplace Survey
+        </p>
+    </div>
     """,
     unsafe_allow_html=True
 )
@@ -186,7 +417,7 @@ st.sidebar.markdown("---")
 
 
 # ============================================================
-# PAGE NAVIGATION
+# NAVIGATION
 # ============================================================
 
 page = st.sidebar.radio(
@@ -209,52 +440,58 @@ page = st.sidebar.radio(
 # FILTERS
 # ============================================================
 
-st.sidebar.markdown("### 🎛️ Filters")
-
-country_options = sorted(
-    df["Country"].dropna().unique().tolist()
-)
-
-gender_options = sorted(
-    df["Gender"].dropna().unique().tolist()
-)
-
-remote_options = sorted(
-    df["remote_work"].dropna().unique().tolist()
-)
-
-employee_options = sorted(
-    df["no_employees"].dropna().unique().tolist()
+st.sidebar.markdown(
+    "### 🎛️ FILTERS"
 )
 
 selected_country = st.sidebar.multiselect(
     "🌍 Country",
-    country_options,
-    default=[]
+    sorted(
+        df["Country"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
 )
 
 selected_gender = st.sidebar.multiselect(
     "👤 Gender",
-    gender_options,
-    default=[]
+    sorted(
+        df["Gender"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
 )
 
 selected_remote = st.sidebar.multiselect(
     "🏠 Remote Work",
-    remote_options,
-    default=[]
+    sorted(
+        df["remote_work"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
 )
 
 selected_size = st.sidebar.multiselect(
     "🏢 Company Size",
-    employee_options,
-    default=[]
+    sorted(
+        df["no_employees"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
 )
 
 selected_treatment = st.sidebar.multiselect(
     "❤️ Treatment",
-    sorted(df["treatment"].dropna().unique()),
-    default=[]
+    sorted(
+        df["treatment"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
 )
 
 
@@ -265,103 +502,84 @@ selected_treatment = st.sidebar.multiselect(
 filtered_df = df.copy()
 
 if selected_country:
+
     filtered_df = filtered_df[
-        filtered_df["Country"].isin(selected_country)
+        filtered_df["Country"].isin(
+            selected_country
+        )
     ]
 
 if selected_gender:
+
     filtered_df = filtered_df[
-        filtered_df["Gender"].isin(selected_gender)
+        filtered_df["Gender"].isin(
+            selected_gender
+        )
     ]
 
 if selected_remote:
+
     filtered_df = filtered_df[
-        filtered_df["remote_work"].isin(selected_remote)
+        filtered_df["remote_work"].isin(
+            selected_remote
+        )
     ]
 
 if selected_size:
+
     filtered_df = filtered_df[
-        filtered_df["no_employees"].isin(selected_size)
+        filtered_df["no_employees"].isin(
+            selected_size
+        )
     ]
 
 if selected_treatment:
+
     filtered_df = filtered_df[
-        filtered_df["treatment"].isin(selected_treatment)
+        filtered_df["treatment"].isin(
+            selected_treatment
+        )
     ]
 
 
 # Reset button
-if st.sidebar.button("🔄 Reset Filters"):
+if st.sidebar.button(
+    "🔄 Reset Filters",
+    use_container_width=True
+):
+
     st.rerun()
 
 
 st.sidebar.markdown("---")
 
 st.sidebar.info(
-    f"Showing **{len(filtered_df):,}** respondents "
-    f"out of **{len(df):,}** total respondents."
+    f"Showing **{len(filtered_df):,}** "
+    f"of **{len(df):,}** respondents."
 )
 
 
 # ============================================================
-# HELPER FUNCTION
-# ============================================================
-
-def percentage(series, value="Yes"):
-
-    valid = series.dropna()
-
-    if len(valid) == 0:
-        return 0
-
-    return (valid == value).mean() * 100
-
-
-def style_chart(ax, title, xlabel="", ylabel=""):
-
-    ax.set_title(
-        title,
-        fontsize=17,
-        fontweight="bold",
-        color=COLORS["dark"],
-        pad=15
-    )
-
-    ax.set_xlabel(
-        xlabel,
-        fontsize=11,
-        color=COLORS["text"]
-    )
-
-    ax.set_ylabel(
-        ylabel,
-        fontsize=11,
-        color=COLORS["text"]
-    )
-
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    plt.tight_layout()
-
-
-# ============================================================
-# DASHBOARD
+# PAGE 1 — DASHBOARD
 # ============================================================
 
 if page == "📊 Dashboard":
 
     st.markdown(
-        '<div class="main-title">🧠 Mental Health in Tech</div>',
+        '<div class="dashboard-title">'
+        '🧠 Mental Health in Tech'
+        '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="subtitle">2014 Mental Health in Technology Workplace Survey</div>',
+        '<div class="dashboard-subtitle">'
+        '2014 Mental Health in Technology Workplace Survey'
+        '</div>',
         unsafe_allow_html=True
     )
 
-    # KPI calculations
+    # KPI values
     respondents = len(filtered_df)
 
     treatment_rate = percentage(
@@ -372,36 +590,40 @@ if page == "📊 Dashboard":
         filtered_df["family_history"]
     )
 
-    remote_rate = percentage(
-        filtered_df["remote_work"]
-    )
-
     benefits_rate = percentage(
         filtered_df["benefits"]
+    )
+
+    remote_rate = percentage(
+        filtered_df["remote_work"]
     )
 
     # KPI cards
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+
         st.metric(
             "👥 Respondents",
             f"{respondents:,}"
         )
 
     with col2:
+
         st.metric(
             "❤️ Treatment",
             f"{treatment_rate:.1f}%"
         )
 
     with col3:
+
         st.metric(
             "🧬 Family History",
             f"{family_rate:.1f}%"
         )
 
     with col4:
+
         st.metric(
             "🏠 Remote Work",
             f"{remote_rate:.1f}%"
@@ -409,17 +631,19 @@ if page == "📊 Dashboard":
 
     st.markdown("---")
 
-    # Dashboard controls
     st.markdown(
-        '<div class="section-title">📊 Dashboard Visualizations</div>',
+        '<div class="section-title">'
+        '📊 Key Visualizations'
+        '</div>',
         unsafe_allow_html=True
     )
 
+    # Toggle controls
     col1, col2 = st.columns(2)
 
     with col1:
 
-        show_treatment = st.toggle(
+        show_family = st.toggle(
             "❤️ Treatment vs Family History",
             value=True
         )
@@ -431,73 +655,95 @@ if page == "📊 Dashboard":
             value=True
         )
 
-    # Treatment vs family history
-    if show_treatment:
+    # Family history chart
+    if show_family:
 
-        crosstab = pd.crosstab(
+        data = pd.crosstab(
             filtered_df["family_history"],
             filtered_df["treatment"]
         )
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = make_chart()
 
-        crosstab.plot(
+        data.plot(
             kind="bar",
             ax=ax,
             color=[
                 COLORS["danger"],
                 COLORS["success"]
             ],
-            edgecolor="white"
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
-            "Treatment Seeking by Family History",
+            "Treatment Status by Family History",
             "Family History",
             "Number of Respondents"
         )
 
-        plt.xticks(rotation=0)
+        ax.legend(
+            title="Treatment",
+            frameon=False
+        )
 
-        st.pyplot(fig)
+        plt.xticks(
+            rotation=0
+        )
+
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
-    # Treatment by gender
+    # Gender chart
     if show_gender:
 
-        gender_rate = (
+        gender_data = (
             filtered_df
             .groupby("Gender")["treatment"]
-            .apply(lambda x: percentage(x))
-            .sort_values(ascending=False)
+            .apply(
+                lambda x:
+                percentage(x)
+            )
+            .sort_values(
+                ascending=False
+            )
         )
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = make_chart()
 
-        gender_rate.plot(
+        gender_data.plot(
             kind="bar",
             ax=ax,
-            color=COLORS["primary"]
+            color=COLORS["primary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Treatment Rate by Gender",
             "Gender",
             "Treatment Rate (%)"
         )
 
-        plt.xticks(rotation=30, ha="right")
+        plt.xticks(
+            rotation=30,
+            ha="right"
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# DEMOGRAPHICS
+# PAGE 2 — DEMOGRAPHICS
 # ============================================================
 
 elif page == "👥 Demographics":
@@ -522,7 +768,7 @@ elif page == "👥 Demographics":
 
     if show_age:
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = make_chart()
 
         ax.hist(
             filtered_df["Age"].dropna(),
@@ -532,43 +778,61 @@ elif page == "👥 Demographics":
             alpha=0.85
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Age Distribution",
             "Age",
             "Number of Respondents"
         )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
     if show_gender:
 
-        gender_counts = filtered_df["Gender"].value_counts()
-
-        fig, ax = plt.subplots(figsize=(9, 6))
-
-        ax.pie(
-            gender_counts.values,
-            labels=gender_counts.index,
-            autopct="%1.1f%%",
-            startangle=90
+        gender_counts = (
+            filtered_df["Gender"]
+            .value_counts()
         )
 
-        ax.set_title(
+        fig, ax = plt.subplots(
+            figsize=(8, 5.5),
+            dpi=110
+        )
+
+        gender_counts.plot(
+            kind="bar",
+            ax=ax,
+            color=COLORS["secondary"],
+            width=0.65
+        )
+
+        format_chart(
+            ax,
             "Gender Distribution",
-            fontsize=17,
-            fontweight="bold"
+            "Gender",
+            "Number of Respondents"
         )
 
-        st.pyplot(fig)
+        plt.xticks(
+            rotation=30,
+            ha="right"
+        )
+
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# MENTAL HEALTH
+# PAGE 3 — MENTAL HEALTH
 # ============================================================
 
 elif page == "❤️ Mental Health":
@@ -593,11 +857,12 @@ elif page == "❤️ Mental Health":
 
     if show_treatment:
 
-        counts = filtered_df[
-            "treatment"
-        ].value_counts()
+        counts = (
+            filtered_df["treatment"]
+            .value_counts()
+        )
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
@@ -605,52 +870,66 @@ elif page == "❤️ Mental Health":
             color=[
                 COLORS["success"],
                 COLORS["danger"]
-            ]
+            ],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Mental Health Treatment Status",
             "Treatment",
             "Number of Respondents"
         )
 
-        plt.xticks(rotation=0)
+        plt.xticks(
+            rotation=0
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
     if show_interference:
 
-        counts = filtered_df[
-            "work_interfere"
-        ].value_counts()
+        counts = (
+            filtered_df["work_interfere"]
+            .value_counts()
+        )
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
             ax=ax,
-            color=COLORS["secondary"]
+            color=COLORS["secondary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Mental Health Work Interference",
             "Work Interference",
             "Number of Respondents"
         )
 
-        plt.xticks(rotation=30, ha="right")
+        plt.xticks(
+            rotation=25,
+            ha="right"
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# WORKPLACE SUPPORT
+# PAGE 4 — WORKPLACE SUPPORT
 # ============================================================
 
 elif page == "🏢 Workplace Support":
@@ -678,41 +957,48 @@ elif page == "🏢 Workplace Support":
         for col in selected_support:
 
             support_rates[
-                col.replace("_", " ").title()
+                col.replace(
+                    "_", " "
+                ).title()
             ] = percentage(
                 filtered_df[col]
             )
 
-        support_df = pd.Series(
-            support_rates
-        ).sort_values(
-            ascending=True
+        support_data = (
+            pd.Series(
+                support_rates
+            )
+            .sort_values(
+                ascending=True
+            )
         )
 
-        fig, ax = plt.subplots(
-            figsize=(10, 6)
-        )
+        fig, ax = make_chart()
 
-        support_df.plot(
+        support_data.plot(
             kind="barh",
             ax=ax,
-            color=COLORS["info"]
+            color=COLORS["info"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Workplace Mental Health Support",
-            "",
-            "Yes Response (%)"
+            "Percentage",
+            ""
         )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# WORKPLACE CULTURE
+# PAGE 5 — WORKPLACE CULTURE
 # ============================================================
 
 elif page == "💼 Workplace Culture":
@@ -737,65 +1023,75 @@ elif page == "💼 Workplace Culture":
 
     if show_coworkers:
 
-        counts = filtered_df[
-            "coworkers"
-        ].value_counts()
-
-        fig, ax = plt.subplots(
-            figsize=(8, 5)
+        counts = (
+            filtered_df["coworkers"]
+            .value_counts()
         )
+
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
             ax=ax,
-            color=COLORS["primary"]
+            color=COLORS["primary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Coworker Support",
             "Response",
-            "Respondents"
+            "Number of Respondents"
         )
 
-        plt.xticks(rotation=0)
+        plt.xticks(
+            rotation=0
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
     if show_supervisor:
 
-        counts = filtered_df[
-            "supervisor"
-        ].value_counts()
-
-        fig, ax = plt.subplots(
-            figsize=(8, 5)
+        counts = (
+            filtered_df["supervisor"]
+            .value_counts()
         )
+
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
             ax=ax,
-            color=COLORS["secondary"]
+            color=COLORS["secondary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Supervisor Support",
             "Response",
-            "Respondents"
+            "Number of Respondents"
         )
 
-        plt.xticks(rotation=0)
+        plt.xticks(
+            rotation=0
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# COMPANY ANALYSIS
+# PAGE 6 — COMPANY ANALYSIS
 # ============================================================
 
 elif page == "🏭 Company Analysis":
@@ -820,42 +1116,47 @@ elif page == "🏭 Company Analysis":
 
     if show_size:
 
-        counts = filtered_df[
-            "no_employees"
-        ].value_counts()
-
-        fig, ax = plt.subplots(
-            figsize=(10, 5)
+        counts = (
+            filtered_df["no_employees"]
+            .value_counts()
         )
+
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
             ax=ax,
-            color=COLORS["primary"]
+            color=COLORS["primary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Company Size Distribution",
             "Number of Employees",
-            "Respondents"
+            "Number of Respondents"
         )
 
-        plt.xticks(rotation=30)
+        plt.xticks(
+            rotation=25,
+            ha="right"
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
     if show_tech:
 
-        counts = filtered_df[
-            "tech_company"
-        ].value_counts()
-
-        fig, ax = plt.subplots(
-            figsize=(8, 5)
+        counts = (
+            filtered_df["tech_company"]
+            .value_counts()
         )
+
+        fig, ax = make_chart()
 
         counts.plot(
             kind="bar",
@@ -863,25 +1164,31 @@ elif page == "🏭 Company Analysis":
             color=[
                 COLORS["primary"],
                 COLORS["pink"]
-            ]
+            ],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
-            "Tech Company vs Non-Tech Company",
+            "Technology Company Status",
             "Company Type",
-            "Respondents"
+            "Number of Respondents"
         )
 
-        plt.xticks(rotation=0)
+        plt.xticks(
+            rotation=0
+        )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
 
 
 # ============================================================
-# GEOGRAPHY
+# PAGE 7 — GEOGRAPHY
 # ============================================================
 
 elif page == "🌍 Geography":
@@ -892,13 +1199,19 @@ elif page == "🌍 Geography":
         filtered_df
         .groupby("Country")
         .agg(
-            Respondents=("treatment", "size"),
+            Respondents=(
+                "treatment",
+                "size"
+            ),
             Treatment_Rate=(
                 "treatment",
-                lambda x: percentage(x)
+                lambda x:
+                percentage(x)
             )
         )
-        .query("Respondents >= 10")
+        .query(
+            "Respondents >= 10"
+        )
         .sort_values(
             "Treatment_Rate",
             ascending=False
@@ -907,39 +1220,57 @@ elif page == "🌍 Geography":
 
     if len(country_data) > 0:
 
+        max_countries = min(
+            20,
+            len(country_data)
+        )
+
         top_n = st.slider(
-            "Number of countries to display",
+            "Number of countries",
             min_value=5,
-            max_value=min(20, len(country_data)),
-            value=min(10, len(country_data))
+            max_value=max_countries,
+            value=min(
+                10,
+                max_countries
+            )
         )
 
-        selected_countries = country_data.head(
-            top_n
+        selected_countries = (
+            country_data
+            .head(top_n)
+            .sort_values(
+                "Treatment_Rate"
+            )
         )
 
-        fig, ax = plt.subplots(
-            figsize=(11, 6)
-        )
+        fig, ax = make_chart()
 
         selected_countries[
             "Treatment_Rate"
-        ].sort_values().plot(
+        ].plot(
             kind="barh",
             ax=ax,
-            color=COLORS["secondary"]
+            color=COLORS["secondary"],
+            width=0.65
         )
 
-        style_chart(
+        format_chart(
             ax,
             "Treatment Rate by Country",
             "Treatment Rate (%)",
             "Country"
         )
 
-        st.pyplot(fig)
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
 
         plt.close(fig)
+
+        st.subheader(
+            "Country Summary"
+        )
 
         st.dataframe(
             country_data.round(2),
@@ -954,7 +1285,7 @@ elif page == "🌍 Geography":
 
 
 # ============================================================
-# ADVANCED ANALYSIS
+# PAGE 8 — ADVANCED ANALYSIS
 # ============================================================
 
 elif page == "📈 Advanced Analysis":
@@ -978,8 +1309,13 @@ elif page == "📈 Advanced Analysis":
         data = (
             filtered_df
             .groupby("Gender")["treatment"]
-            .apply(lambda x: percentage(x))
-            .sort_values(ascending=False)
+            .apply(
+                lambda x:
+                percentage(x)
+            )
+            .sort_values(
+                ascending=False
+            )
         )
 
         xlabel = "Gender"
@@ -992,7 +1328,10 @@ elif page == "📈 Advanced Analysis":
                 "age_group",
                 observed=False
             )["treatment"]
-            .apply(lambda x: percentage(x))
+            .apply(
+                lambda x:
+                percentage(x)
+            )
         )
 
         xlabel = "Age Group"
@@ -1001,8 +1340,13 @@ elif page == "📈 Advanced Analysis":
 
         data = (
             filtered_df
-            .groupby("remote_work")["treatment"]
-            .apply(lambda x: percentage(x))
+            .groupby(
+                "remote_work"
+            )["treatment"]
+            .apply(
+                lambda x:
+                percentage(x)
+            )
         )
 
         xlabel = "Remote Work"
@@ -1011,8 +1355,13 @@ elif page == "📈 Advanced Analysis":
 
         data = (
             filtered_df
-            .groupby("no_employees")["treatment"]
-            .apply(lambda x: percentage(x))
+            .groupby(
+                "no_employees"
+            )["treatment"]
+            .apply(
+                lambda x:
+                percentage(x)
+            )
         )
 
         xlabel = "Company Size"
@@ -1021,8 +1370,13 @@ elif page == "📈 Advanced Analysis":
 
         data = (
             filtered_df
-            .groupby("tech_company")["treatment"]
-            .apply(lambda x: percentage(x))
+            .groupby(
+                "tech_company"
+            )["treatment"]
+            .apply(
+                lambda x:
+                percentage(x)
+            )
         )
 
         xlabel = "Company Type"
@@ -1031,23 +1385,27 @@ elif page == "📈 Advanced Analysis":
 
         data = (
             filtered_df
-            .groupby("family_history")["treatment"]
-            .apply(lambda x: percentage(x))
+            .groupby(
+                "family_history"
+            )["treatment"]
+            .apply(
+                lambda x:
+                percentage(x)
+            )
         )
 
         xlabel = "Family History"
 
-    fig, ax = plt.subplots(
-        figsize=(10, 6)
-    )
+    fig, ax = make_chart()
 
     data.plot(
         kind="bar",
         ax=ax,
-        color=COLORS["primary"]
+        color=COLORS["primary"],
+        width=0.65
     )
 
-    style_chart(
+    format_chart(
         ax,
         f"Treatment Rate by {xlabel}",
         xlabel,
@@ -1059,21 +1417,29 @@ elif page == "📈 Advanced Analysis":
         ha="right"
     )
 
-    st.pyplot(fig)
+    st.pyplot(
+        fig,
+        use_container_width=True
+    )
 
     plt.close(fig)
 
-    # Show values
+    st.subheader(
+        "📋 Analysis Values"
+    )
+
     st.dataframe(
-        data.round(2).rename(
+        data.round(2)
+        .rename(
             "Treatment Rate (%)"
-        ).to_frame(),
+        )
+        .to_frame(),
         use_container_width=True
     )
 
 
 # ============================================================
-# INSIGHTS
+# PAGE 9 — INSIGHTS
 # ============================================================
 
 elif page == "🎯 Insights":
@@ -1097,64 +1463,72 @@ elif page == "🎯 Insights":
     )
 
     st.markdown(
-        """
-        <div class="info-box">
-        <b>How to use this page:</b><br>
-        The values below are calculated from the currently
-        selected filters. Use them as descriptive findings
-        from the survey data.
+        f"""
+        <div class="info-card">
+        <b>Current filtered dataset:</b>
+        {len(filtered_df):,} respondents
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
 
         st.metric(
-            "❤️ Treatment Rate",
+            "❤️ Treatment",
             f"{treatment_pct:.1f}%"
         )
+
+    with col2:
 
         st.metric(
             "🧬 Family History",
             f"{family_pct:.1f}%"
         )
 
-    with col2:
+    with col3:
 
         st.metric(
             "🏠 Remote Work",
             f"{remote_pct:.1f}%"
         )
 
+    with col4:
+
         st.metric(
-            "🏢 Benefits: Yes",
+            "🏢 Benefits",
             f"{benefits_pct:.1f}%"
         )
 
     st.markdown("---")
 
-    st.subheader("📌 Data-Based Observations")
+    st.subheader(
+        "📌 Data-Based Observations"
+    )
 
     st.write(
         f"""
-        • The filtered dataset contains **{len(filtered_df):,} respondents**.
+        • The current filtered dataset contains
+        **{len(filtered_df):,} respondents**.
 
-        • **{treatment_pct:.1f}%** of respondents reported treatment.
+        • **{treatment_pct:.1f}%** of respondents reported
+        receiving treatment.
 
-        • **{family_pct:.1f}%** reported having a family history of mental health conditions.
+        • **{family_pct:.1f}%** reported a family history
+        of mental health conditions.
 
         • **{remote_pct:.1f}%** reported working remotely.
 
-        • **{benefits_pct:.1f}%** reported that mental health benefits were available.
+        • **{benefits_pct:.1f}%** reported that mental health
+        benefits were available.
         """
     )
 
     st.info(
-        "These observations describe patterns in the survey data. "
-        "They should not be interpreted as proof of causation."
+        "These are descriptive observations from the survey "
+        "data and do not establish causation."
     )
 
 
@@ -1164,17 +1538,22 @@ elif page == "🎯 Insights":
 
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("📥 Export")
+st.sidebar.markdown(
+    "### 📥 EXPORT"
+)
 
-csv_data = filtered_df.to_csv(
-    index=False
-).encode("utf-8")
+csv_data = (
+    filtered_df
+    .to_csv(index=False)
+    .encode("utf-8")
+)
 
 st.sidebar.download_button(
     label="⬇️ Download Filtered Data",
     data=csv_data,
     file_name="filtered_mental_health_data.csv",
-    mime="text/csv"
+    mime="text/csv",
+    use_container_width=True
 )
 
 
@@ -1186,8 +1565,15 @@ st.markdown("---")
 
 st.markdown(
     """
-    <div style="text-align:center;color:#64748B;padding:10px;">
-    🧠 Mental Health in Tech Survey • 2014 • Exploratory Data Analysis
+    <div style="
+        text-align:center;
+        color:#64748B;
+        font-size:13px;
+        padding:10px;
+    ">
+        🧠 Mental Health in Tech Survey • 2014
+        <br>
+        Exploratory Data Analysis Dashboard
     </div>
     """,
     unsafe_allow_html=True
