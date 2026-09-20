@@ -26,7 +26,7 @@ COLORS = {
 }
 
 sns.set_style("whitegrid")
-sns.set_context("talk")  # larger fonts
+sns.set_context("talk")
 
 # Load data
 @st.cache_data
@@ -57,6 +57,7 @@ if selected_size != "All": filtered_df = filtered_df[filtered_df['no_employees']
 # DASHBOARD
 if page=="📊 Dashboard":
     st.title("🧠 Dashboard Overview")
+
     col1,col2,col3,col4 = st.columns(4)
     with col1: st.metric("Respondents", f"{len(filtered_df):,}")
     with col2: st.metric("Treatment Yes", (filtered_df['treatment']=='Yes').sum())
@@ -64,47 +65,40 @@ if page=="📊 Dashboard":
     with col4: st.metric("Benefits Yes", (filtered_df['benefits']=='Yes').sum())
 
     st.markdown("---")
-    st.subheader("📈 Treatment vs Family History")
-    crosstab = pd.crosstab(filtered_df['family_history'], filtered_df['treatment'])
-    fig, ax = plt.subplots(figsize=(12,6))
-    crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
-    ax.set_title("Treatment Seeking by Family History", fontsize=16, fontweight='bold')
-    st.pyplot(fig)
+    if st.toggle("Show Treatment vs Family History Chart"):
+        crosstab = pd.crosstab(filtered_df['family_history'], filtered_df['treatment'])
+        fig, ax = plt.subplots(figsize=(12,6))
+        crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
+        ax.set_title("Treatment Seeking by Family History", fontsize=16, fontweight='bold')
+        st.pyplot(fig)
 
 # DEMOGRAPHICS
 elif page=="👥 Demographics":
     st.title("👥 Demographics")
-    col1,col2 = st.columns(2)
-    with col1:
-        st.subheader("Age Distribution")
+    if st.checkbox("Show Age Distribution"):
         fig, ax = plt.subplots(figsize=(12,6))
         ax.hist(filtered_df['Age'], bins=15, color=COLORS['primary'], edgecolor='white', alpha=0.85)
         ax.set_title("Age Distribution", fontsize=16, fontweight='bold')
         st.pyplot(fig)
-    with col2:
-        st.subheader("Gender Distribution")
+    if st.checkbox("Show Gender Distribution"):
         gender_counts = filtered_df['Gender'].value_counts()
         fig, ax = plt.subplots(figsize=(8,6))
         wedges, texts, autotexts = ax.pie(gender_counts.values, autopct='%1.1f%%',
                                           colors=[COLORS['primary'],COLORS['secondary'],COLORS['success'],COLORS['warning'],COLORS['danger']],
                                           startangle=90, pctdistance=0.75)
         ax.legend(wedges, gender_counts.index, title="Gender", loc="center left", bbox_to_anchor=(1,0,0.5,1))
-        ax.set_title("Gender Distribution", fontsize=16, fontweight='bold')
         st.pyplot(fig)
 
 # MENTAL HEALTH
 elif page=="❤️ Mental Health":
     st.title("❤️ Mental Health")
-    col1,col2 = st.columns(2)
-    with col1:
-        st.subheader("Treatment Status")
+    if st.toggle("Show Treatment Status"):
         treatment_counts = filtered_df['treatment'].value_counts()
         fig, ax = plt.subplots(figsize=(10,6))
         sns.barplot(x=treatment_counts.index, y=treatment_counts.values, palette=[COLORS['success'],COLORS['danger']], ax=ax)
         ax.set_title("Treatment Status", fontsize=16, fontweight='bold')
         st.pyplot(fig)
-    with col2:
-        st.subheader("Work Interference")
+    if st.toggle("Show Work Interference"):
         work_counts = filtered_df['work_interfere'].value_counts()
         fig, ax = plt.subplots(figsize=(10,6))
         sns.barplot(x=work_counts.index, y=work_counts.values, palette="muted", ax=ax)
@@ -114,28 +108,24 @@ elif page=="❤️ Mental Health":
 # SUPPORT
 elif page=="🏢 Support":
     st.title("🏢 Employer Support")
-    support_cols = ['benefits','care_options','wellness_program','seek_help','anonymity']
-    for col in support_cols:
-        st.subheader(col.replace("_"," ").title())
-        counts = filtered_df[col].value_counts()
-        fig, ax = plt.subplots(figsize=(10,6))
-        sns.barplot(x=counts.index, y=counts.values, palette="Blues", ax=ax)
-        ax.set_title(f"{col.replace('_',' ').title()} Responses", fontsize=16, fontweight='bold')
-        st.pyplot(fig)
+    for col in ['benefits','care_options','wellness_program','seek_help','anonymity']:
+        if st.checkbox(f"Show {col.replace('_',' ').title()} Chart"):
+            counts = filtered_df[col].value_counts()
+            fig, ax = plt.subplots(figsize=(10,6))
+            sns.barplot(x=counts.index, y=counts.values, palette="Blues", ax=ax)
+            ax.set_title(f"{col.replace('_',' ').title()} Responses", fontsize=16, fontweight='bold')
+            st.pyplot(fig)
 
 # CULTURE
 elif page=="💼 Culture":
     st.title("💼 Workplace Culture")
-    col1,col2 = st.columns(2)
-    with col1:
-        st.subheader("Coworkers")
+    if st.toggle("Show Coworkers Chart"):
         counts = filtered_df['coworkers'].value_counts()
         fig, ax = plt.subplots(figsize=(8,6))
         ax.pie(counts.values, autopct='%1.1f%%', colors=[COLORS['primary'],COLORS['secondary'],COLORS['success']], startangle=90)
         ax.legend(counts.index, title="Coworkers", loc="center left", bbox_to_anchor=(1,0,0.5,1))
         st.pyplot(fig)
-    with col2:
-        st.subheader("Supervisor")
+    if st.toggle("Show Supervisor Chart"):
         counts = filtered_df['supervisor'].value_counts()
         fig, ax = plt.subplots(figsize=(8,6))
         ax.pie(counts.values, autopct='%1.1f%%', colors=[COLORS['primary'],COLORS['secondary'],COLORS['success']], startangle=90)
@@ -145,16 +135,13 @@ elif page=="💼 Culture":
 # COMPANY
 elif page=="🏭 Company":
     st.title("🏭 Company Analysis")
-    col1,col2 = st.columns(2)
-    with col1:
-        st.subheader("Company Size")
+    if st.checkbox("Show Company Size Chart"):
         counts = filtered_df['no_employees'].value_counts()
         fig, ax = plt.subplots(figsize=(12,6))
         sns.barplot(x=counts.index, y=counts.values, palette="Blues_d", ax=ax)
         ax.set_title("Company Size Distribution", fontsize=16, fontweight='bold')
         st.pyplot(fig)
-    with col2:
-        st.subheader("Tech vs Non-Tech")
+    if st.checkbox("Show Tech vs Non-Tech Chart"):
         counts = filtered_df['tech_company'].value_counts()
         fig, ax = plt.subplots(figsize=(10,6))
         sns.barplot(x=counts.index, y=counts.values, palette=[COLORS['primary'],COLORS['secondary']], ax=ax)
@@ -164,15 +151,22 @@ elif page=="🏭 Company":
 # ANALYSIS
 elif page=="📈 Analysis":
     st.title("📈 Cross Analysis")
-    st.subheader("Treatment by Gender")
-    crosstab = pd.crosstab(filtered_df['Gender'], filtered_df['treatment'])
-    fig, ax = plt.subplots(figsize=(12,6))
-    crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
-    ax.set_title("Treatment Seeking by Gender", fontsize=16, fontweight='bold')
-    st.pyplot(fig)
+    option = st.selectbox("Choose Analysis", ["Treatment by Gender","Treatment by Age Group"])
+    if option=="Treatment by Gender":
+        crosstab = pd.crosstab(filtered_df['Gender'], filtered_df['treatment'])
+        fig, ax = plt.subplots(figsize=(12,6))
+        crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
+        ax.set_title("Treatment Seeking by Gender", fontsize=16, fontweight='bold')
+        st.pyplot(fig)
+    elif option=="Treatment by Age Group":
+        crosstab = pd.crosstab(filtered_df['age_group'], filtered_df['treatment'])
+        fig, ax = plt.subplots(figsize=(12,6))
+        crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
+        ax.set_title("Treatment Seeking by Age Group", fontsize=16, fontweight='bold')
+        st.pyplot(fig)
 
 # INSIGHTS
 elif page=="🎯 Insights":
     st.title("🎯 Insights & Recommendations")
     treatment_pct = (filtered_df['treatment']=='Yes').mean()*100
-    benefits_pct = (filtered_df['benefits']=='Yes').mean()*100
+    benefits_pct = (filtered_df['benefits']=='Yes')
