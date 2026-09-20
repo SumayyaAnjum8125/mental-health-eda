@@ -227,21 +227,38 @@ st.markdown(
 @st.cache_data
 def load_data():
 
-    # Support both filenames
-    if os.path.exists("mental_health_survey.csv"):
-        file_name = "mental_health_survey.csv"
+    # Use the actual project dataset
+    file_name = "survey.csv"
 
-    elif os.path.exists("survey.csv"):
-        file_name = "survey.csv"
-
-    else:
+    if not os.path.exists(file_name):
         st.error(
-            "CSV file not found. Please keep survey.csv or "
-            "mental_health_survey.csv in the same folder as app.py."
+            "survey.csv not found. Please keep survey.csv "
+            "in the same folder as app.py."
         )
         st.stop()
 
     df = pd.read_csv(file_name)
+
+    # Check that the expected survey columns are available
+    required_columns = [
+        "Age", "Gender", "Country", "treatment",
+        "family_history", "remote_work", "no_employees",
+        "benefits", "care_options", "wellness_program",
+        "seek_help", "anonymity", "coworkers",
+        "supervisor", "tech_company", "work_interfere"
+    ]
+
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
+
+    if missing_columns:
+        st.error(
+            "The dataset is missing these required columns: "
+            + ", ".join(missing_columns)
+        )
+        st.stop()
 
     # Clean column names
     df.columns = df.columns.str.strip()
