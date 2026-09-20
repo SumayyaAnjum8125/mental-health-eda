@@ -64,122 +64,87 @@ if page == "📊 Dashboard":
     st.title("🧠 Mental Health in Tech Survey")
     st.markdown("**Professional Analysis Dashboard | 2014 Survey Data**")
 
-    # Key metrics
     col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Total Respondents", f"{len(filtered_df):,}")
-
-    with col2:
-        treatment_pct = (len(filtered_df[filtered_df['treatment'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
-        st.metric("Sought Treatment", f"{treatment_pct:.1f}%", f"{(filtered_df['treatment'] == 'Yes').sum()} people")
-
-    with col3:
-        family_pct = (len(filtered_df[filtered_df['family_history'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
-        st.metric("Family History", f"{family_pct:.1f}%", f"{(filtered_df['family_history'] == 'Yes').sum()} people")
-
-    with col4:
-        benefits_pct = (len(filtered_df[filtered_df['benefits'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
-        st.metric("Have Benefits", f"{benefits_pct:.1f}%", f"{(filtered_df['benefits'] == 'Yes').sum()} people")
+    with col1: st.metric("Total Respondents", f"{len(filtered_df):,}")
+    with col2: st.metric("Countries", f"{filtered_df['Country'].nunique()}")
+    with col3: st.metric("Average Age", f"{filtered_df['Age'].mean():.1f}")
+    with col4: st.metric("Remote Workers", f"{(filtered_df['remote_work'] == 'Yes').sum()}")
 
     st.markdown("---")
 
-    # Quick overview
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("📈 Quick Overview")
-        st.write(f"**Countries:** {filtered_df['Country'].nunique()}")
-        st.write(f"**Average Age:** {filtered_df['Age'].mean():.1f}")
-        st.write(f"**Age Range:** {filtered_df['Age'].min()} - {filtered_df['Age'].max()}")
-        st.write(f"**Tech Companies:** {(filtered_df['tech_company'] == 'Yes').sum()}")
-        st.write(f"**Remote Workers:** {(filtered_df['remote_work'] == 'Yes').sum()}")
-
-    with col2:
-        st.subheader("💡 Mental Health Summary")
-        st.write(f"**Treatment Yes:** {(filtered_df['treatment'] == 'Yes').sum()}")
-        st.write(f"**Family History Yes:** {(filtered_df['family_history'] == 'Yes').sum()}")
-        st.write(f"**Work Interference (Sometimes/Often):** {(filtered_df['work_interfere'].isin(['Sometimes','Often'])).sum()}")
-        st.write(f"**Benefits Yes:** {(filtered_df['benefits'] == 'Yes').sum()}")
-        st.write(f"**Fear Consequences Yes:** {(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
+    col1, col2, col3 = st.columns(3)
+    with col1: st.metric("Sought Treatment", f"{(filtered_df['treatment'] == 'Yes').sum()} people")
+    with col2: st.metric("Family History", f"{(filtered_df['family_history'] == 'Yes').sum()} people")
+    with col3: st.metric("Has Benefits", f"{(filtered_df['benefits'] == 'Yes').sum()} people")
 
 # ============================================================================ #
 # DEMOGRAPHICS PAGE
 # ============================================================================ #
 elif page == "👥 Demographics":
     st.title("👥 Demographic Analysis")
+    st.write("Age, Gender, and Country distributions with charts and stats.")
 
+# ============================================================================ #
+# MENTAL HEALTH PAGE
+# ============================================================================ #
+elif page == "❤️ Mental Health":
+    st.title("❤️ Mental Health Metrics")
+    col1, col2, col3 = st.columns(3)
+    with col1: st.metric("Treatment Yes", f"{(filtered_df['treatment'] == 'Yes').sum()}")
+    with col2: st.metric("Family History Yes", f"{(filtered_df['family_history'] == 'Yes').sum()}")
+    with col3: st.metric("Work Interference (Sometimes/Often)", f"{(filtered_df['work_interfere'].isin(['Sometimes','Often'])).sum()}")
     col1, col2 = st.columns(2)
+    with col1: st.metric("Fear Consequences Yes", f"{(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
+    with col2: st.metric("Remote Workers", f"{(filtered_df['remote_work'] == 'Yes').sum()}")
 
-    with col1:
-        st.subheader("📊 Age Distribution")
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.hist(filtered_df['Age'], bins=20, color=COLORS['primary'], edgecolor='white', alpha=0.8)
-        ax.set_xlabel('Age', fontweight='bold')
-        ax.set_ylabel('Frequency', fontweight='bold')
-        ax.set_title('Age Distribution', fontweight='bold', fontsize=12)
-        ax.grid(axis='y', alpha=0.3)
-        ax.set_facecolor(COLORS['light'])
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        st.subheader("📈 Age Statistics")
-        age_stats = pd.DataFrame({
-            'Metric': ['Mean', 'Median', 'Std Dev', 'Min', 'Max'],
-            'Value': [
-                f"{filtered_df['Age'].mean():.2f}",
-                f"{filtered_df['Age'].median():.2f}",
-                f"{filtered_df['Age'].std():.2f}",
-                f"{filtered_df['Age'].min()}",
-                f"{filtered_df['Age'].max()}"
-            ]
-        })
-        st.dataframe(age_stats, use_container_width=True)
-
+# ============================================================================ #
+# SUPPORT PAGE
+# ============================================================================ #
+elif page == "🏢 Support":
+    st.title("🏢 Employer Support Metrics")
+    col1, col2, col3 = st.columns(3)
+    with col1: st.metric("Benefits Yes", f"{(filtered_df['benefits'] == 'Yes').sum()}")
+    with col2: st.metric("Care Options Yes", f"{(filtered_df['care_options'] == 'Yes').sum()}")
+    with col3: st.metric("Wellness Program Yes", f"{(filtered_df['wellness_program'] == 'Yes').sum()}")
     col1, col2 = st.columns(2)
+    with col1: st.metric("Seek Help Resources Yes", f"{(filtered_df['seek_help'] == 'Yes').sum()}")
+    with col2: st.metric("Anonymity Protected Yes", f"{(filtered_df['anonymity'] == 'Yes').sum()}")
 
-    with col1:
-        st.subheader("👫 Gender Distribution")
-        gender_counts = filtered_df['Gender'].value_counts()
-        fig, ax = plt.subplots(figsize=(8, 6))
-        colors_list = [COLORS['primary'], COLORS['secondary'], COLORS['success'], COLORS['warning'], COLORS['danger']]
+# ============================================================================ #
+# CULTURE PAGE
+# ============================================================================ #
+elif page == "💼 Culture":
+    st.title("💼 Workplace Culture Metrics")
+    col1, col2, col3 = st.columns(3)
+    with col1: st.metric("Discuss with Coworkers Yes", f"{(filtered_df['coworkers'] == 'Yes').sum()}")
+    with col2: st.metric("Discuss with Supervisor Yes", f"{(filtered_df['supervisor'] == 'Yes').sum()}")
+    with col3: st.metric("Fear Consequences Yes", f"{(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
 
-        wedges, texts, autotexts = ax.pie(
-            gender_counts.values,
-            labels=None,
-            autopct='%1.1f%%',
-            colors=colors_list[:len(gender_counts)],
-            startangle=90,
-            pctdistance=0.8
-        )
+# ============================================================================ #
+# COMPANY PAGE
+# ============================================================================ #
+elif page == "🏭 Company":
+    st.title("🏭 Company Metrics")
+    col1, col2 = st.columns(2)
+    with col1: st.metric("Tech Companies", f"{(filtered_df['tech_company'] == 'Yes').sum()}")
+    with col2: st.metric("Non-Tech Companies", f"{(filtered_df['tech_company'] == 'No').sum()}")
+    st.metric("Company Size Categories", f"{filtered_df['no_employees'].nunique()} sizes")
 
-        ax.legend(
-            wedges,
-            gender_counts.index,
-            title="Gender",
-            loc="center left",
-            bbox_to_anchor=(1, 0, 0.5, 1)
-        )
+# ============================================================================ #
+# ANALYSIS PAGE
+# ============================================================================ #
+elif page == "📈 Analysis":
+    st.title("📈 Cross-Analysis Metrics")
+    st.write("Here you can add crosstab charts or metrics comparing treatment vs family history, gender, company size, etc.")
+    st.metric("Treatment vs Family History (Yes/Yes)", f"{len(filtered_df[(filtered_df['family_history']=='Yes') & (filtered_df['treatment']=='Yes')])}")
 
-        ax.set_title('Gender Distribution', fontweight='bold')
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        st.subheader("🌍 Top 10 Countries")
-        country_counts = filtered_df['Country'].value_counts().head(10)
-        fig, ax = plt.subplots(figsize=(8, 6))
-        colors_gradient = plt.cm.Blues(np.linspace(0.4, 0.8, len(country_counts)))
-        ax.barh(range(len(country_counts)), country_counts.values, color=colors_gradient, edgecolor='white')
-        ax.set_yticks(range(len(country_counts)))
-        ax.set_yticklabels(country_counts.index)
-        ax.set_xlabel('Count', fontweight='bold')
-        ax.invert_yaxis()
-        ax.set_title('Top 10 Countries', fontweight='bold')
-        ax.grid(axis='x', alpha=0.3)
-        st.pyplot(fig)
-        plt.close()
+# ============================================================================ #
+# INSIGHTS PAGE
+# ============================================================================ #
+elif page == "🎯 Insights":
+    st.title("🎯 Key Insights & Recommendations")
+    st.write("Summary of metrics and recommendations based on gaps between mental health needs and employer support.")
+    st.metric("Gap: Treatment vs Benefits", f"{(filtered_df['treatment']=='Yes').sum() - (filtered_df['benefits']=='Yes').sum()} people")
 
 # ============================================================================ #
 # Footer
