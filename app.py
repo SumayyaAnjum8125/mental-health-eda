@@ -58,9 +58,55 @@ if selected_gender != "All": filtered_df = filtered_df[filtered_df['Gender'] == 
 if selected_size != "All": filtered_df = filtered_df[filtered_df['no_employees'] == selected_size]
 
 # ============================================================================ #
-# DEMOGRAPHICS PAGE (fixed Gender Distribution pie chart)
+# DASHBOARD PAGE
 # ============================================================================ #
-if page == "👥 Demographics":
+if page == "📊 Dashboard":
+    st.title("🧠 Mental Health in Tech Survey")
+    st.markdown("**Professional Analysis Dashboard | 2014 Survey Data**")
+
+    # Key metrics
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Total Respondents", f"{len(filtered_df):,}")
+
+    with col2:
+        treatment_pct = (len(filtered_df[filtered_df['treatment'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
+        st.metric("Sought Treatment", f"{treatment_pct:.1f}%", f"{(filtered_df['treatment'] == 'Yes').sum()} people")
+
+    with col3:
+        family_pct = (len(filtered_df[filtered_df['family_history'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
+        st.metric("Family History", f"{family_pct:.1f}%", f"{(filtered_df['family_history'] == 'Yes').sum()} people")
+
+    with col4:
+        benefits_pct = (len(filtered_df[filtered_df['benefits'] == 'Yes']) / len(filtered_df)) * 100 if len(filtered_df) > 0 else 0
+        st.metric("Have Benefits", f"{benefits_pct:.1f}%", f"{(filtered_df['benefits'] == 'Yes').sum()} people")
+
+    st.markdown("---")
+
+    # Quick overview
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("📈 Quick Overview")
+        st.write(f"**Countries:** {filtered_df['Country'].nunique()}")
+        st.write(f"**Average Age:** {filtered_df['Age'].mean():.1f}")
+        st.write(f"**Age Range:** {filtered_df['Age'].min()} - {filtered_df['Age'].max()}")
+        st.write(f"**Tech Companies:** {(filtered_df['tech_company'] == 'Yes').sum()}")
+        st.write(f"**Remote Workers:** {(filtered_df['remote_work'] == 'Yes').sum()}")
+
+    with col2:
+        st.subheader("💡 Mental Health Summary")
+        st.write(f"**Treatment Yes:** {(filtered_df['treatment'] == 'Yes').sum()}")
+        st.write(f"**Family History Yes:** {(filtered_df['family_history'] == 'Yes').sum()}")
+        st.write(f"**Work Interference (Sometimes/Often):** {(filtered_df['work_interfere'].isin(['Sometimes','Often'])).sum()}")
+        st.write(f"**Benefits Yes:** {(filtered_df['benefits'] == 'Yes').sum()}")
+        st.write(f"**Fear Consequences Yes:** {(filtered_df['mental_health_consequence'] == 'Yes').sum()}")
+
+# ============================================================================ #
+# DEMOGRAPHICS PAGE
+# ============================================================================ #
+elif page == "👥 Demographics":
     st.title("👥 Demographic Analysis")
 
     col1, col2 = st.columns(2)
@@ -101,14 +147,13 @@ if page == "👥 Demographics":
 
         wedges, texts, autotexts = ax.pie(
             gender_counts.values,
-            labels=None,  # remove labels from slices
+            labels=None,
             autopct='%1.1f%%',
             colors=colors_list[:len(gender_counts)],
             startangle=90,
             pctdistance=0.8
         )
 
-        # Legend outside the pie with proper names
         ax.legend(
             wedges,
             gender_counts.index,
@@ -137,10 +182,8 @@ if page == "👥 Demographics":
         plt.close()
 
 # ============================================================================ #
-# (Keep other pages: Dashboard, Mental Health, Support, Culture, Company, Analysis, Insights)
-# ============================================================================ #
-
 # Footer
+# ============================================================================ #
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center; color: gray; font-size: 11px; padding: 20px;'>
