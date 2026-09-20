@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -15,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Professional color palette
+# Colors
 COLORS = {
     'primary': '#2E86AB',
     'secondary': '#A23B72',
@@ -58,7 +57,6 @@ if selected_size != "All": filtered_df = filtered_df[filtered_df['no_employees']
 # DASHBOARD
 if page=="📊 Dashboard":
     st.title("🧠 Dashboard Overview")
-
     col1,col2,col3,col4 = st.columns(4)
     with col1: st.metric("Respondents", f"{len(filtered_df):,}")
     with col2: st.metric("Treatment Yes", (filtered_df['treatment']=='Yes').sum())
@@ -71,8 +69,6 @@ if page=="📊 Dashboard":
     fig, ax = plt.subplots(figsize=(12,6))
     crosstab.plot(kind='bar', ax=ax, color=[COLORS['danger'],COLORS['success']], edgecolor='white')
     ax.set_title("Treatment Seeking by Family History", fontsize=16, fontweight='bold')
-    ax.set_xlabel("Family History", fontsize=12, fontweight='bold')
-    ax.set_ylabel("Respondents", fontsize=12, fontweight='bold')
     st.pyplot(fig)
 
 # DEMOGRAPHICS
@@ -84,8 +80,6 @@ elif page=="👥 Demographics":
         fig, ax = plt.subplots(figsize=(12,6))
         ax.hist(filtered_df['Age'], bins=15, color=COLORS['primary'], edgecolor='white', alpha=0.85)
         ax.set_title("Age Distribution", fontsize=16, fontweight='bold')
-        ax.set_xlabel("Age", fontsize=12, fontweight='bold')
-        ax.set_ylabel("Respondents", fontsize=12, fontweight='bold')
         st.pyplot(fig)
     with col2:
         st.subheader("Gender Distribution")
@@ -178,4 +172,7 @@ elif page=="📈 Analysis":
     st.pyplot(fig)
 
 # INSIGHTS
-elif page=="
+elif page=="🎯 Insights":
+    st.title("🎯 Insights & Recommendations")
+    treatment_pct = (filtered_df['treatment']=='Yes').mean()*100
+    benefits_pct = (filtered_df['benefits']=='Yes').mean()*100
